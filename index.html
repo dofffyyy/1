@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Robot Control</title>
+    <style>
+        /* Add your CSS styling here */
+        /* Add some basic styling for the chatbox and buttons */
+        #chatbox {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            height: 200px;
+            background-color: #f4f4f4;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+        /* Adjust the map container size as needed */
+        #map-container {
+          height: 500px;
+          width: 500px;
+          position: relative;
+          border: 1px solid black;
+        }
+        .robot {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background-color: red;
+          border-radius: 50%;
+          /* Create the road element */
+        }
+        .road {
+            position: relative;
+            width:500px;
+            background-color: rgb(41, 40, 40);
+            height: 50px;
+            top:225px;
+            margin: 0;
+            
+            
+          }
+        .road-1{
+            position: relative;
+            width:500px;
+            background-color: rgb(41, 40, 40);
+            height: 50px;
+            top:   175px;
+            margin: 0;
+            transform: rotate(90deg);
+    
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Robot Control</h1>
+    <div id="map-container">
+        <!-- Your map elements here -->
+        <div class="road"></div>
+        <div class="road-1"></div>
+        <div class="robot" id="robot"></div>
+    </div>
+    <form id="robotForm" onsubmit="return false;">
+        <button type="button" onclick="startMessageSequence(1)" value="forward">Landmark 1</button>
+        <button type="button" onclick="startMessageSequence(2)" value="backward">Landmark 2</button>
+        <button type="button" onclick="startMessageSequence(3)" value ="left">Landmark 3</button>
+        <button type="button" onclick="startMessageSequence(4)" value="right">Landmark 4</button>
+    </form>
+    <div id="chatbox"></div>
+    <script>
+        var chatbox = document.getElementById("chatbox");
+        function startMessageSequence(buttonId) {
+            var messages = getMessages(buttonId);
+            playMessages(messages);
+
+            if (buttonId >= 1 && buttonId <= landmarks.length) {
+                moveRobotToLandmark(buttonId);
+            }
+        }
+
+        // ... (your existing code) ...
+  
+        function getMessages(buttonId) {
+            if (buttonId === 1) {
+                return [
+                    "Moving to landmark 1",
+                    "Destination reached",
+                    "Delivering...",
+                    "Delivery finished",
+                    "Returning"
+                ];
+            } else if (buttonId === 2) {
+                return [
+                    "Moving to landmark 2",
+                    "Destination reached",
+                    "Delivering...",
+                    "Delivery finished",
+                    "Returning"
+                ];
+            } else if (buttonId === 3) {
+                return [
+                    "Moving to landmark 3",
+                    "Destination reached",
+                    "Delivering...",
+                    "Delivery finished",
+                    "Returning"
+                ];
+            } else if (buttonId === 4) {
+                return [
+                    "Moving to landmark 4",
+                    "Destination reached",
+                    "Delivering...",
+                    "Delivery finished",
+                    "Returning"
+                ];
+            }
+        }
+        
+        function playMessages(messages) {
+            var index = 0;
+            
+            function displayNextMessage() {
+                if (index < messages.length) {
+                    addMessage(messages[index]);
+                    index++;
+                    setTimeout(displayNextMessage, 4000);
+                }
+            }
+            
+            displayNextMessage();
+        }
+        
+        function addMessage(message) {
+            var newMessage = document.createElement("div");
+            newMessage.textContent = message;
+            chatbox.appendChild(newMessage);
+        }
+        
+
+        // Your getMessages, playMessages, and addMessage functions here
+
+        // Global variables and landmark movement logic
+        let robotX = 0;
+        let robotY = 0;
+        const landmarks = [
+            { name: "Landmark 1", x: 100, y: 0 },
+            { name: "Landmark 2", x: 0, y: 100 },
+            { name: "Landmark 3", x: -100, y: 0 },
+            { name: "Landmark 4", x: 0, y: -100 }
+        ];
+
+        function moveRobotToLandmark(landmarkIndex) {
+            const landmark = landmarks[landmarkIndex - 1];
+            robotX = landmark.x;
+            robotY = landmark.y;
+            updateRobotPosition();
+        }
+
+        function updateRobotPosition() {
+            const robotElement = document.getElementById("robot");
+            robotElement.style.left = (250 + robotX - 10) + "px"; // Center X axis at 250px
+            robotElement.style.top = (250 - robotY - 10) + "px"; // Center Y axis at 250px
+        }
+
+        updateRobotPosition();
+        function moveRobot(direction) {
+            fetch('/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ direction: direction })
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
