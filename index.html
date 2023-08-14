@@ -38,9 +38,7 @@
             height: 50px;
             top:225px;
             margin: 0;
-            
-            
-          }
+        }
         .road-1{
             position: relative;
             width:500px;
@@ -49,9 +47,7 @@
             top:   175px;
             margin: 0;
             transform: rotate(90deg);
-    
         }
-
     </style>
 </head>
 <body>
@@ -63,25 +59,40 @@
         <div class="robot" id="robot"></div>
     </div>
     <form id="robotForm" onsubmit="return false;">
-        <button type="button" onclick="startMessageSequence(1)" value="forward">Landmark 1</button>
-        <button type="button" onclick="startMessageSequence(2)" value="backward">Landmark 2</button>
-        <button type="button" onclick="startMessageSequence(3)" value ="left">Landmark 3</button>
-        <button type="button" onclick="startMessageSequence(4)" value="right">Landmark 4</button>
+        <button type="button" onclick="startMessageSequence(1)">Landmark 1</button>
+        <button type="button" onclick="startMessageSequence(2)">Landmark 2</button>
+        <button type="button" onclick="startMessageSequence(3)">Landmark 3</button>
+        <button type="button" onclick="startMessageSequence(4)">Landmark 4</button>
     </form>
     <div id="chatbox"></div>
     <script>
         var chatbox = document.getElementById("chatbox");
+        
         function startMessageSequence(buttonId) {
             var messages = getMessages(buttonId);
-            playMessages(messages);
-
+            
             if (buttonId >= 1 && buttonId <= landmarks.length) {
+                var direction = getDirectionFromButtonId(buttonId);
+                playMessages(messages);
                 moveRobotToLandmark(buttonId);
+                moveRobot(direction); // Call the moveRobot function with the direction
+
             }
         }
 
-        // ... (your existing code) ...
-  
+        function getDirectionFromButtonId(buttonId) {
+            if (buttonId === 1) {
+                return 'forward';
+            } else if (buttonId === 2) {
+                return 'backward';
+            } else if (buttonId === 3) {
+                return 'left';
+            } else if (buttonId === 4) {
+                return 'right';
+            }
+            return ''; // Default case
+        }
+
         function getMessages(buttonId) {
             if (buttonId === 1) {
                 return [
@@ -125,7 +136,7 @@
                 if (index < messages.length) {
                     addMessage(messages[index]);
                     index++;
-                    setTimeout(displayNextMessage, 4000);
+                    setTimeout(displayNextMessage, 3000);
                 }
             }
             
@@ -138,9 +149,6 @@
             chatbox.appendChild(newMessage);
         }
         
-
-        // Your getMessages, playMessages, and addMessage functions here
-
         // Global variables and landmark movement logic
         let robotX = 0;
         let robotY = 0;
@@ -165,6 +173,7 @@
         }
 
         updateRobotPosition();
+
         function moveRobot(direction) {
             fetch('/move', {
                 method: 'POST',
