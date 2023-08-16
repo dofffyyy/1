@@ -1,191 +1,92 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <title>Robot Control</title>
-    <style>
-        /* Add your CSS styling here */
-        /* Add some basic styling for the chatbox and buttons */
-        #chatbox {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 300px;
-            height: 200px;
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            padding: 10px;
-            overflow-y: scroll;
-        }
-        /* Adjust the map container size as needed */
-        #map-container {
-          height: 500px;
-          width: 500px;
-          position: relative;
-          border: 1px solid black;
-        }
-        .robot {
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          background-color: red;
-          border-radius: 50%;
-          /* Create the road element */
-        }
-        .road {
-            position: relative;
-            width:500px;
-            background-color: rgb(41, 40, 40);
-            height: 50px;
-            top:225px;
-            margin: 0;
-        }
-        .road-1{
-            position: relative;
-            width:500px;
-            background-color: rgb(41, 40, 40);
-            height: 50px;
-            top:   175px;
-            margin: 0;
-            transform: rotate(90deg);
-        }
-    </style>
-</head>
-<body>
-    <h1>Robot Control</h1>
-    <div id="map-container">
-        <!-- Your map elements here -->
-        <div class="road"></div>
-        <div class="road-1"></div>
-        <div class="robot" id="robot"></div>
+{% extends 'base.html' %}
+{% block pagetitle %}
+AI Engine
+{% endblock pagetitle %}
+
+{% block body %}
+<div>
+    <div class="container">
+        <!-- For demo purpose -->
+        <div class="row mb-5 text-center text-white">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="display-4" style="padding-top: 2%;font-weight: 400;color: rgb(4, 54, 4);"><b>🍀AI Engine🍀</b></h1>
+                <p class="lead" style="font-weight: 500;color: black;">Let AI Engine Will Help You To Detect Disease</p>
+            </div>
+        </div>
+        <!-- End -->
+        <div class="row ">
+            <div class="col mx-auto">
+                <div class="p-5 bg-white shadow rounded-lg" style="height: 95%;">
+
+                    <h5><b>Why is it necessary to detect disease in plant ?</b></h5>
+                    <p>Plant diseases affect the growth of their respective species. In addition, some research gaps are
+                        identified from which to obtain greater transparency for detecting diseases in plants, even
+                        before their symptoms appear clearly.
+                        diagnosis is one of the most important aspects of a plant pathologist's training. Without proper
+                        identification of the disease and the disease-causing agent, disease control measures can be a
+                        waste of time and money and can lead to further plant losses. Proper disease diagnosis is
+                        necessary.
+                    </p>
+                </div>
+            </div>
+            <div class="col mx-auto">
+                <div class="p-5 bg-white shadow rounded-lg" style="height: 95%;"><img
+                        src="https://www.pngjoy.com/pngl/250/4840262_plants-png-indoors-tropical-plant-png-hd-png.png "
+                        height="300" alt="" width="200" class="d-block mx-auto mb-4 rounded-pill">
+
+                    <!-- Default bootstrap file upload-->
+
+                    <form action="/submit" method="POST" enctype="multipart/form-data">
+                        <div class="custom-file overflow-hidden mb-4">
+                            <input type="file" id="actual-btn" hidden name="image" />
+                            <label for="actual-btn">Choose File</label>
+                            <span id="file-chosen">No file chosen</span>
+                        </div>
+
+                        <!-- End -->
+
+                        <h6 class="text-center mb-4 text-muted">
+                            Simply upload your plant's leaf image and then see the magic of AI.
+                        </h6>
+
+                        <!-- Custom bootstrap upload file-->
+                        <center>
+                            <a class="mx-2"><button type="submit" class="btn btn-outline-success">Submit</button></a>
+                        </center>
+                    </form>
+                    <!-- End -->
+
+                </div>
+            </div>
+            <div class="col mx-auto">
+                <div class="p-5 bg-white shadow rounded-lg" style="height: 95%;">
+                    <h5><b>Prevent Plant Disease follow below steps:</b></h5>
+                    <ol>
+                        <li>Follow Good Sanitation Practices.</li>
+                        <li>Fertilize to Keep Your Plants Healthy.</li>
+                        <li>Inspect Plants for Diseases Before You Bring Them Home.</li>
+                        <li>Allow the Soil to Warm Before Planting.</li>
+                        <li>Ensure a Healthy Vegetable Garden By Rotating Crops.</li>
+                        <li>Provide Good Air Circulation</li>
+                        <li>Remove Diseased Stems and Foliage</li>
+                    </ol>
+                    <a target="_blank" href="https://www.thespruce.com/prevent-plant-diseases-in-your-garden-2539511"
+                        class="mx-2"><button type="button" class="btn btn-outline-success">More info</button></a>
+                </div>
+            </div>
+        </div>
     </div>
-    <form id="robotForm" onsubmit="return false;">
-        <button type="button" onclick="startMessageSequence(1)">Landmark 1</button>
-        <button type="button" onclick="startMessageSequence(2)">Landmark 2</button>
-        <button type="button" onclick="startMessageSequence(3)">Landmark 3</button>
-        <button type="button" onclick="startMessageSequence(4)">Landmark 4</button>
-    </form>
-    <div id="chatbox"></div>
-    <script>
-        var chatbox = document.getElementById("chatbox");
-        
-        function startMessageSequence(buttonId) {
-            var messages = getMessages(buttonId);
-            
-            if (buttonId >= 1 && buttonId <= landmarks.length) {
-                var direction = getDirectionFromButtonId(buttonId);
-                playMessages(messages);
-                moveRobotToLandmark(buttonId);
-                moveRobot(direction); // Call the moveRobot function with the direction
+</div>
 
-            }
-        }
+<script>
+    const actualBtn = document.getElementById('actual-btn');
 
-        function getDirectionFromButtonId(buttonId) {
-            if (buttonId === 1) {
-                return 'forward';
-            } else if (buttonId === 2) {
-                return 'backward';
-            } else if (buttonId === 3) {
-                return 'left';
-            } else if (buttonId === 4) {
-                return 'right';
-            }
-            return ''; // Default case
-        }
+    const fileChosen = document.getElementById('file-chosen');
 
-        function getMessages(buttonId) {
-            if (buttonId === 1) {
-                return [
-                    "Moving to landmark 1",
-                    "Destination reached",
-                    "Delivering...",
-                    "Delivery finished",
-                    "Returning"
-                ];
-            } else if (buttonId === 2) {
-                return [
-                    "Moving to landmark 2",
-                    "Destination reached",
-                    "Delivering...",
-                    "Delivery finished",
-                    "Returning"
-                ];
-            } else if (buttonId === 3) {
-                return [
-                    "Moving to landmark 3",
-                    "Destination reached",
-                    "Delivering...",
-                    "Delivery finished",
-                    "Returning"
-                ];
-            } else if (buttonId === 4) {
-                return [
-                    "Moving to landmark 4",
-                    "Destination reached",
-                    "Delivering...",
-                    "Delivery finished",
-                    "Returning"
-                ];
-            }
-        }
-        
-        function playMessages(messages) {
-            var index = 0;
-            
-            function displayNextMessage() {
-                if (index < messages.length) {
-                    addMessage(messages[index]);
-                    index++;
-                    setTimeout(displayNextMessage, 3000);
-                }
-            }
-            
-            displayNextMessage();
-        }
-        
-        function addMessage(message) {
-            var newMessage = document.createElement("div");
-            newMessage.textContent = message;
-            chatbox.appendChild(newMessage);
-        }
-        
-        // Global variables and landmark movement logic
-        let robotX = 0;
-        let robotY = 0;
-        const landmarks = [
-            { name: "Landmark 1", x: 100, y: 0 },
-            { name: "Landmark 2", x: 0, y: 100 },
-            { name: "Landmark 3", x: -100, y: 0 },
-            { name: "Landmark 4", x: 0, y: -100 }
-        ];
+    actualBtn.addEventListener('change', function () {
+        fileChosen.textContent = this.files[0].name
+    })
+</script>
 
-        function moveRobotToLandmark(landmarkIndex) {
-            const landmark = landmarks[landmarkIndex - 1];
-            robotX = landmark.x;
-            robotY = landmark.y;
-            updateRobotPosition();
-        }
-
-        function updateRobotPosition() {
-            const robotElement = document.getElementById("robot");
-            robotElement.style.left = (250 + robotX - 10) + "px"; // Center X axis at 250px
-            robotElement.style.top = (250 - robotY - 10) + "px"; // Center Y axis at 250px
-        }
-
-        updateRobotPosition();
-
-        function moveRobot(direction) {
-            fetch('/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ direction: direction })
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-    </script>
-</body>
-</html>
+{% endblock body %}
